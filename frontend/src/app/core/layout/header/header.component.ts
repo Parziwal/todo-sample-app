@@ -1,5 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  signal,
+} from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   matContrast,
@@ -8,8 +12,9 @@ import {
   matLightMode,
   matMenu,
 } from '@ng-icons/material-icons/baseline';
-import { ThemeService } from '../../theme/theme.service';
+import { CommonModule } from '@angular/common';
 import { Theme } from '../../theme/theme.enum';
+import { ThemeService } from '../../theme/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -29,19 +34,22 @@ import { Theme } from '../../theme/theme.enum';
   schemas: [],
 })
 export class HeaderComponent {
-  private _isDrawerOpen = signal(true);
+  readonly theme = this.themeService.currentTheme;
+  readonly ThemeEnum = Theme;
 
-  isDrawerOpen = this._isDrawerOpen.asReadonly();
-  theme = this.themeService.theme;
-  ThemeEnum = Theme;
+  private isDrawerOpenInternal = signal(true);
 
   constructor(private themeService: ThemeService) {}
 
-  openDrawer(): void {
-    this._isDrawerOpen.update((isDrawerOpen) => !isDrawerOpen);
+  get isDrawerOpen(): Signal<boolean> {
+    return this.isDrawerOpenInternal.asReadonly();
   }
 
-  changeTheme() {
+  openDrawer(): void {
+    this.isDrawerOpenInternal.update(isDrawerOpen => !isDrawerOpen);
+  }
+
+  changeTheme(): void {
     this.themeService.changeThemeToNextOne();
   }
 }
